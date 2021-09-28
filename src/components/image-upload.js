@@ -1,19 +1,13 @@
 import React, { Component } from "react";
-import UploadService from "../services/file-upload.service";
+import UploadService from "../services/file-upload";
 
 export default class UploadImages extends Component {
   constructor(props) {
     super(props);
     this.selectFile = this.selectFile.bind(this);
     this.upload = this.upload.bind(this);
-
-    this.state = {
-      currentFile: undefined,
-      previewImage: undefined,
-      progress: 0,
-      message: "",
-
-      imageInfos: [],
+    this.state = { currentFile: undefined, previewImage: undefined,
+      progress: 0, message: "", imageInfos: [],
     };
   }
 
@@ -29,50 +23,35 @@ export default class UploadImages extends Component {
     this.setState({
       currentFile: event.target.files[0],
       previewImage: URL.createObjectURL(event.target.files[0]),
-      progress: 0,
-      message: ""
+      progress: 0, message: ""
     });
   }
 
   upload() {
-    this.setState({
-      progress: 0,
+    this.setState({ progress: 0,
     });
-
     UploadService.upload(this.state.currentFile, (event) => {
-      this.setState({
-        progress: Math.round((100 * event.loaded) / event.total),
+      this.setState({ progress: Math.round((100 * event.loaded) / event.total),
       });
     })
       .then((response) => {
-        this.setState({
-          message: response.data.message,
+        this.setState({ message: response.data.message,
         });
         return UploadService.getFiles();
       })
       .then((files) => {
-        this.setState({
-          imageInfos: files.data,
+        this.setState({ imageInfos: files.data,
         });
       })
       .catch((err) => {
-        this.setState({
-          progress: 0,
-          message: "Could not upload the image!",
+        this.setState({ progress: 0, message: "Could not upload the image!",
           currentFile: undefined,
         });
       });
   }
 
   render() {
-    const {
-      currentFile,
-      previewImage,
-      progress,
-      message,
-      imageInfos,
-    } = this.state;
-
+    const { currentFile, previewImage, progress, message, imageInfos } = this.state;
     return (
       <div>
         <div className="row">
@@ -87,8 +66,7 @@ export default class UploadImages extends Component {
               className="btn btn-success btn-sm"
               disabled={!currentFile}
               onClick={this.upload}
-            >
-              Upload
+            > Upload
             </button>
           </div>
         </div>
@@ -102,8 +80,7 @@ export default class UploadImages extends Component {
               aria-valuemin="0"
               aria-valuemax="100"
               style={{ width: progress + "%" }}
-            >
-              {progress}%
+            > {progress}%
             </div>
           </div>
         )}
@@ -117,7 +94,7 @@ export default class UploadImages extends Component {
         {message && (
           <div className="alert alert-secondary mt-3" role="alert">
             {message}
-          </div> 
+          </div>
         )}
 
         <div className="card mt-3">
